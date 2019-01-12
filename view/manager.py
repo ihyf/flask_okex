@@ -1,28 +1,65 @@
 # coding:utf-8
 from create_app import app
+from my_dispatcher import api_add
 from flask import render_template,jsonify
 import requests
 import json
+import time
+import asyncio
+import aiohttp
+sema = asyncio.Semaphore(3)
+
+
+async def get_data(url):
+    async with aiohttp.request('GET', url) as r:
+        data = await r.json()
+    return data
+
+
+async def main():
+    # 获取instrument_id
+    url1 = "https://www.okex.me/api/futures/v3/instruments"
+    r1 = requests.get(url1)
+    data1 = json.loads(r1.content.decode())
+    instrument_id_list = [d["instrument_id"] for d in data1]
+    url = []
+    for instrument_id in instrument_id_list:
+        url2 = f"https://www.okex.me/api/futures/v3/instruments/{instrument_id}/mark_price"
+        url.append(url2)
+    print(url)
+    start = time.time()
+    await asyncio.wait([
+        get_data('https: //www.okex.me/api/futures/v3/instruments/BTC-USD-190118/mark_price'),
+        get_data('https: //www.okex.me/api/futures/v3/instruments/BTC-USD-190125/mark_price'),
+        get_data('https: //www.okex.me/api/futures/v3/instruments/BTC-USD-190329/mark_price')
+    ])
+    end = time.time()
+    print(end-start)
 
 
 @app.route("/")
 def index():
+    
     # 获取instrument_id
     url1 = "https://www.okex.me/api/futures/v3/instruments"
     r1 = requests.get(url1)
     data1 = json.loads(r1.content.decode())
     instrument_id_list = [d["instrument_id"]for d in data1]
+
     # 获取价格
     data_list = []
     for instrument_id in instrument_id_list:
         data = {}
+        time1 = time.time()
         url2 = f"https://www.okex.me/api/futures/v3/instruments/{instrument_id}/mark_price"
         r2 = requests.get(url2)
         data2 = json.loads(r2.content.decode())
+        time2 = time.time()
+        print(time2 - time1)
         data["instrument_id"] = data2["instrument_id"]
         data["mark_price"] = data2["mark_price"]
         data_list.append(data)
-        
+    
     show_list = []
     for i in range(int(len(data_list)/3)):
         l = []
@@ -40,7 +77,34 @@ def index():
         l.append(round((data_list[3 * i+1]["mark_price"] / data_list[3 * i + 2]["mark_price"]) * 100 - 100, 2))
         
         show_list.append(l)
-    print(show_list)
     
     return render_template("index.html", show_list=show_list)
+
+@api_add
+def index2(*args, **kwargs):
+    # 获取instrument_id
+    time1 = time.time()
+    url1 = "https://www.okex.me/api/futures/v3/instruments"
+    r1 = requests.get(url1)
+    data1 = json.loads(r1.content.decode())
+    print(time.time()-time1)
+    instrument_id_list = [d["instrument_id"] for d in data1]
+
+    url = []
+    for instrument_id in instrument_id_list:
+        url2 = f"https://www.okex.me/api/futures/v3/instruments/{instrument_id}/mark_price"
+        url.append(url2)
+    # print(url)
+    start = time.time()
+    event_loop = asyncio.get_event_loop()
+    
+    tasks = [get_data(u) for u in url]
+    
+    results = event_loop.run_until_complete(asyncio.gather(*tasks))
+    end = time.time()
+    print(end-start)
+    print(results)
+    return {"hellow": 1234}
+
+
 
