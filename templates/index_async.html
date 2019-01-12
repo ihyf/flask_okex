@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% for sl in show_list %}
+    {{ sl.this_week_name }} 当周 价格:{{ sl.this_week_price }}
+    {{ sl.next_week_name }} 次周 价格:{{ sl.next_week_price }}
+    {{ sl.this_quarter_name }} 季度 价格:{{ sl.this_quarter_price }}
+    当周 VS 次周 {{ sl.this_week_vs_next_week }}%
+    当周 VS 季度 {{ sl.this_week_vs_quarter }}%
+    次周 VS 季度 {{ sl.next_week_vs_quarter }}%
+{% endfor %}
+
+
+
+</body>
+</html>
