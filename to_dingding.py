@@ -1,3 +1,4 @@
+# coding:utf-8
 import time
 import requests
 import json
@@ -38,8 +39,6 @@ def get_more_than_five():
         
         contract.next_week_vs_quarter = round((contract.next_week_price / contract.this_quarter_price) * 100 - 100, 2)
         if contract.this_week_vs_quarter > num or contract.next_week_vs_quarter > 5.5:
-            print(contract.this_week_vs_quarter)
-            print(contract.next_week_vs_quarter)
             # to_dingding
             robot_id = "f2ab17f31719b093d80754a95524a5b37d38eec507d36ef4b51e708206ea4feb"
             send_content = (str(contract.this_week_name) + " 当周 VS 季度 现为:" + str(contract.this_week_vs_quarter) + "%")

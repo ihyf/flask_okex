@@ -15,6 +15,5 @@ def auto_send_dingding(send_content, profit_ratio="", robot_id=""):
         url = 'https://oapi.dingtalk.com/robot/send?access_token=' + robot_id
         body = json.dumps(msg)
         requests.post(url, data=body, headers=Headers)
-        print('钉钉发送成功')
     except Exception as err:
-        print('钉钉发送失败', err)
+        pass
