@@ -1,15 +1,12 @@
 # coding:utf-8
 import operator
-from asyncio import async
-
-from create_app import app
-from my_dispatcher import api_add
-from flask import render_template,jsonify
 import requests
 import json
 import time
 import asyncio
 import aiohttp
+from create_app import app
+from flask import render_template
 from model.contract_okex import ContractOkEx
 
 
@@ -23,34 +20,33 @@ async def get_data(url):
     return data
 
 
-async def main():
-    # 获取instrument_id
-    time1 = time.time()
-    url1 = "https://www.okex.me/api/futures/v3/instruments"
-    r1 = requests.get(url1)
-    data1 = json.loads(r1.content.decode())
-    print(time.time() - time1)
-    instrument_id_list = [d["instrument_id"] for d in data1]
-    
-    url = []
-    for instrument_id in instrument_id_list:
-        url2 = f"https://www.okex.me/api/futures/v3/instruments/{instrument_id}/mark_price"
-        url.append(url2)
-    # print(url)
-    start = time.time()
-    
-    
-    tasks = [get_data(u) for u in url]
-    
-    results = event_loop.run_until_complete(asyncio.gather(*tasks))
-    end = time.time()
-    print(end - start)
-    return results
+# async def main():
+#     # 获取instrument_id
+#     time1 = time.time()
+#     url1 = "https://www.okex.me/api/futures/v3/instruments"
+#     r1 = requests.get(url1)
+#     data1 = json.loads(r1.content.decode())
+#     print(time.time() - time1)
+#     instrument_id_list = [d["instrument_id"] for d in data1]
+#
+#     url = []
+#     for instrument_id in instrument_id_list:
+#         url2 = f"https://www.okex.me/api/futures/v3/instruments/{instrument_id}/mark_price"
+#         url.append(url2)
+#     # print(url)
+#     start = time.time()
+#
+#
+#     tasks = [get_data(u) for u in url]
+#
+#     results = event_loop.run_until_complete(asyncio.gather(*tasks))
+#     end = time.time()
+#     print(end - start)
+#     return results
 
 
 @app.route("/123")
 def index():
-    
     # 获取instrument_id
     url1 = "https://www.okex.me/api/futures/v3/instruments"
     r1 = requests.get(url1)
