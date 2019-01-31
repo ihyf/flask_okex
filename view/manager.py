@@ -108,6 +108,7 @@ def index2(*args, **kwargs):
     asyncio.set_event_loop(loop)
     tasks = [get_data(u) for u in url]
     results = loop.run_until_complete(asyncio.gather(*tasks))
+    print(results)
     end = time.time()
     print(end - start)
     show_list = []

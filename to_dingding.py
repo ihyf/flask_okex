@@ -27,7 +27,9 @@ def get_more_than_five():
     show_list = []
     num = 5.5
     for i in range(int(len(results) / 3)):
-        contract = ContractOkEx(None, None, None, None, None, None, None, None, None)
+        print(2)
+        LAST_MAKER = 0
+        contract = ContractOkEx()
         contract.this_week_name = results[3 * i]["instrument_id"]
         contract.this_week_price = results[3 * i]["mark_price"]
         contract.next_week_name = results[3 * i + 1]["instrument_id"]
@@ -39,15 +41,20 @@ def get_more_than_five():
         
         contract.next_week_vs_quarter = round((contract.next_week_price / contract.this_quarter_price) * 100 - 100, 2)
         if contract.this_week_vs_quarter > num or contract.next_week_vs_quarter > 5.5:
-            # to_dingding
-            robot_id = "f2ab17f31719b093d80754a95524a5b37d38eec507d36ef4b51e708206ea4feb"
-            send_content = (str(contract.this_week_name) + " 当周 VS 季度 现为:" + str(contract.this_week_vs_quarter) + "%")
-            auto_send_dingding(send_content=send_content, robot_id=robot_id)
+            if (contract.this_week_vs_quarter - LAST_MAKER) > 0.3:
+                print(contract.this_week_vs_quarter - LAST_MAKER)
+                # to_dingding
+                robot_id = "f2ab17f31719b093d80754a95524a5b37d38eec507d36ef4b51e708206ea4feb"
+                send_content = (str(contract.this_week_name) + " 当周 VS 季度 现为:" + str(contract.this_week_vs_quarter) + "%")
+                # auto_send_dingding(send_content=send_content, robot_id=robot_id)
+                LAST_MAKER = contract.this_week_vs_quarter
+                print(LAST_MAKER)
         show_list.append(contract)
+        print(1)
     return
 
 
 if __name__ == "__main__":
     while True:
         get_more_than_five()
-        time.sleep(5)
+        time.sleep(10)
